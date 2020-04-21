@@ -10,6 +10,7 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.camera import Camera
+from kivy.uix.popup import Popup
 from kivy.utils import platform
 from kivy.lang import Builder
 from functools import partial
@@ -21,7 +22,6 @@ store = JsonStore('articles.json')
 Builder.load_string('''
 <RotatedCamera>:
         orientation: 'vertical'
-        size_hint:(1.0,0.5)
         Camera:
                 id:camera
                 canvas.before:
@@ -87,6 +87,8 @@ class AddScreen(Screen):
         previous_button = Button(text = "Volver")
         previous_button.bind(on_release = self.changer)
         add_layout.add_widget(previous_button)
+        self.succes = Popup(title = "Aviso de articulo", content = Label(text = "Articulo creado con exito"), size_hint = (0.75,0.25))
+        self.warning = Popup(title = "Aviso de articulo", content = Label(text = "Datos invalidos"), size_hint = (0.75,0.25))
         self.add_widget(add_layout)
     
     def changer(self,*args):
@@ -94,8 +96,22 @@ class AddScreen(Screen):
 
     def create(self,signal):
         global store
+        try:
+            int(self.codigo_de_barra.text)
+        except:
+            self.codigo.text= "Codigo"
+            self.descripcion.text = "Descripcion"
+            self.unidad_por_bulto.text = "Unidades por bulto"
+            self.codigo_de_barra.text = "Codigo de barra"
+            self.warning.open()
+            return
         store.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
-                codigo = self.codigo.text) 
+                codigo = self.codigo.text)
+        self.codigo.text= "Codigo"
+        self.descripcion.text = "Descripcion"
+        self.unidad_por_bulto.text = "Unidades por bulto"
+        self.codigo_de_barra.text = "Codigo de barra"
+        self.succes.open()
 
 class RotatedCamera(BoxLayout):
 
@@ -131,7 +147,8 @@ class ScanScreen(Screen):
         scan_layout.add_widget(add_button)
         scan_layout.add_widget(previous_button)
         self.cameraObject = RotatedCamera()
-        self.cameraObject.ids['camera'].resolution = (1024,768)
+        self.cameraObject.ids['camera'].resolution = (1920, 1080) 
+        self.cameraObject.ids['camera'].allow_strech = True
         self.cameraObject.ids['camera'].play = True
         scan_layout.add_widget(self.cameraObject)
         self.add_widget(scan_layout)
@@ -144,6 +161,7 @@ class ScanScreen(Screen):
         codigo_barras = None
         self.cameraObject.takePicture("/sdcard/tmp.png")
         img = Image.open("/sdcard/tmp.png")
+        img = img.rotate(-90)
         barcode = pyzbar.decode(img)
         try:
             codigo_barras = barcode[0].data.decode("utf-8")
