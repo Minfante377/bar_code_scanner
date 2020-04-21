@@ -4,7 +4,6 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.textinput import TextInput
 from kivy.core.window import Window
 from kivy.uix.dropdown import DropDown
@@ -12,12 +11,27 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.camera import Camera
 from kivy.utils import platform
+from kivy.lang import Builder
 from functools import partial
 from datetime import datetime
 from pyzbar import pyzbar
 import sys
 
 store = JsonStore('articles.json')
+Builder.load_string('''
+<RotatedCamera>:
+        orientation: 'vertical'
+        size_hint:(1.0,0.5)
+        Camera:
+                id:camera
+                canvas.before:
+                        PushMatrix
+                        Rotate:
+                                angle: -90
+                                origin:self.center
+                canvas.after:
+                        PopMatrix
+                ''')
 
 class MainScreen(Screen):
     
@@ -83,6 +97,12 @@ class AddScreen(Screen):
         store.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
                 codigo = self.codigo.text) 
 
+class RotatedCamera(BoxLayout):
+
+    def takePicture(self,path):
+        camera = self.ids['camera']
+        camera.export_to_png(path)
+
 class ScanScreen(Screen):
         
     def __init__(self,**kwargs):
@@ -110,12 +130,10 @@ class ScanScreen(Screen):
         scan_layout.add_widget(scan_button)
         scan_layout.add_widget(add_button)
         scan_layout.add_widget(previous_button)
-        self.cameraObject = Camera(play= True, resolution = (800,600))
-        camera_box = ScatterLayout(do_scale = False, do_translation_x = False, do_translation_y = False, do_rotation= False)
-        camera_box.rotation = -90
-        camera_box.pos_hint = {'x':0.3,'y': 0.75}
-        camera_box.add_widget(self.cameraObject)
-        scan_layout.add_widget(camera_box)
+        self.cameraObject = RotatedCamera()
+        self.cameraObject.ids['camera'].resolution = (1024,768)
+        self.cameraObject.ids['camera'].play = True
+        scan_layout.add_widget(self.cameraObject)
         self.add_widget(scan_layout)
     
     def changer(self,*args):
@@ -124,7 +142,7 @@ class ScanScreen(Screen):
     def read_bar_code(self,signal):
         barcode = []
         codigo_barras = None
-        self.cameraObject.export_to_png("/sdcard/tmp.png")
+        self.cameraObject.takePicture("/sdcard/tmp.png")
         img = Image.open("/sdcard/tmp.png")
         barcode = pyzbar.decode(img)
         try:
