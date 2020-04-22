@@ -203,7 +203,9 @@ class ScanApp(App):
         manager.add_widget(scan_screen)
         manager.current = 'main_screen'
         return manager
-    
+   
+   def on_pause(self):
+       return True
 
     
 
