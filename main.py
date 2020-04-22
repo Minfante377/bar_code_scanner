@@ -133,7 +133,7 @@ class ScanScreen(Screen):
     def __init__(self,**kwargs):
         super(ScanScreen, self).__init__(**kwargs)
         scan_layout = BoxLayout(orientation = "vertical")
-        inputs_box = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.2))
+        inputs_box = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.3))
         input_left_box = BoxLayout(orientation = "vertical")
         input_right_box = BoxLayout(orientation = "vertical")
         self.codigo = TextInput(text="Codigo")
@@ -148,6 +148,8 @@ class ScanScreen(Screen):
         input_right_box.add_widget(self.unidad_por_bulto)
         input_right_box.add_widget(self.codigo_de_barra)
         input_right_box.add_widget(self.precio)
+        inputs_box.add_widget(input_left_box)
+        inputs_box.add_widget(input_right_box)
         scan_button = Button(text = "Escanear codigo de barras",size_hint = (1.0,0.1))
         scan_button.bind(on_release = self.read_bar_code)
         add_button = Button(text = "Agregar articulo",size_hint = (1.0,0.1))
