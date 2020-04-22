@@ -74,10 +74,14 @@ class AddScreen(Screen):
         self.descripcion = TextInput(text="Descripcion")
         self.unidad_por_bulto = TextInput(text="Unidades por bulto")
         self.codigo_de_barra = TextInput(text="Codigo de barra")
+        self.empresa = TextInput(text = "Empresa")
+        self.precio = TextInput(text = "Precio")
         input_left_box.add_widget(self.codigo)
         input_left_box.add_widget(self.descripcion)
+        input_left_box.add_widget(self.empresa)
         input_right_box.add_widget(self.unidad_por_bulto)
         input_right_box.add_widget(self.codigo_de_barra)
+        input_right_box.add_widget(self.precio)
         inputs_box.add_widget(input_left_box)
         inputs_box.add_widget(input_right_box)
         generar_button = Button(text = "Generar articulo")
@@ -98,19 +102,24 @@ class AddScreen(Screen):
         global store
         try:
             int(self.codigo_de_barra.text)
+            int(self.precio.text)
         except:
             self.codigo.text= "Codigo"
             self.descripcion.text = "Descripcion"
             self.unidad_por_bulto.text = "Unidades por bulto"
             self.codigo_de_barra.text = "Codigo de barra"
+            self.empresa.text = "Empresa"
+            self.precio.text = "Precio"
             self.warning.open()
             return
         store.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
-                codigo = self.codigo.text)
+                codigo = self.codigo.text, empresa = self.empresa.text, precio = self.precio.text)
         self.codigo.text= "Codigo"
         self.descripcion.text = "Descripcion"
         self.unidad_por_bulto.text = "Unidades por bulto"
         self.codigo_de_barra.text = "Codigo de barra"
+        self.empresa.text = "Empresa"
+        self.precio.text = "Precio"
         self.succes.open()
 
 class RotatedCamera(BoxLayout):
@@ -131,12 +140,14 @@ class ScanScreen(Screen):
         self.descripcion = TextInput(text="Descripcion")
         self.unidad_por_bulto = TextInput(text="Unidades por bulto")
         self.codigo_de_barra = TextInput(text="Codigo de barra")
+        self.empresa = TextInput(text = "Empresa")
+        self.precio = TextInput(text = "Precio")
         input_left_box.add_widget(self.codigo)
         input_left_box.add_widget(self.descripcion)
+        input_left_box.add_widget(self.empresa)
         input_right_box.add_widget(self.unidad_por_bulto)
         input_right_box.add_widget(self.codigo_de_barra)
-        inputs_box.add_widget(input_left_box)
-        inputs_box.add_widget(input_right_box)
+        input_right_box.add_widget(self.precio)
         scan_button = Button(text = "Escanear codigo de barras",size_hint = (1.0,0.1))
         scan_button.bind(on_release = self.read_bar_code)
         add_button = Button(text = "Agregar articulo",size_hint = (1.0,0.1))
@@ -174,7 +185,8 @@ class ScanScreen(Screen):
             self.unidad_por_bulto.text = store.get(codigo_barras)['unidad_bulto']
             self.codigo.text = store.get(codigo_barras)['codigo']
             self.descripcion.text = store.get(codigo_barras)['descripcion']
-
+            self.empresa.text = store.get(codigo_barras)['empresa']
+            self.precio.text = store.get(codigo_barras)['precio']
 class ScanApp(App):
     def __init(self,**kwargs):
         super().__init__(**kwargs)
