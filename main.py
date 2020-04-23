@@ -111,7 +111,7 @@ class AddScreen(Screen):
         global store
         try:
             int(self.codigo_de_barra.text)
-            int(self.precio.text)
+            float(self.precio.text)
         except:
             self.codigo.text= "Codigo"
             self.descripcion.text = "Descripcion"
