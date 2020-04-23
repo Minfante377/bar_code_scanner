@@ -72,10 +72,8 @@ class MainScreen(Screen):
     def _request_android_permissions(self):
         if not platform == 'android':
             return
-        from android.permissions import request_permission, Permission
-        request_permission(Permission.CAMERA)
-        request_permission(Permission.WRITE_EXTERNAL_STORAGE)
-        request_permission(Permission.READ_EXTERNAL_STORAGE)
+        from android.permissions import request_permissions, Permission
+        request_permissions([Permission.CAMERA, Permission.WRITE_EXTERNAL_STORAGE])
 
 class AddScreen(Screen):
 
