@@ -155,6 +155,7 @@ class ScanScreen(Screen):
         self.descripcion = TextInput(text="Descripcion")
         self.unidad_por_bulto = TextInput(text="Unidades por bulto")
         self.codigo_de_barra = TextInput(text="Codigo de barra")
+        self.codigo_de_barra.bind(text = self.refresh_data)
         self.empresa = TextInput(text = "Empresa")
         self.precio = TextInput(text = "Precio")
         input_left_box.add_widget(self.codigo)
@@ -222,6 +223,18 @@ class ScanScreen(Screen):
             self.precio.text = "Precio"
             self.warning.open()
             return
+        
+        if not store.exists(self.codigo_de_barra.text):
+            warning = Popup(title = "Error", content = Label(text = "El codigo de barras no existe en su base de datos"), size_hint = (0.75,0.25))
+            warning.open()
+            self.codigo.text= "Codigo"
+            self.descripcion.text = "Descripcion"
+            self.unidad_por_bulto.text = "Unidades por bulto"
+            self.codigo_de_barra.text = "Codigo de barra"
+            self.empresa.text = "Empresa"
+            self.precio.text = "Precio"
+            return
+
         shopping_car.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
                 codigo = self.codigo.text, empresa = self.empresa.text, precio = self.precio.text)
         self.codigo.text= "Codigo"
@@ -231,6 +244,16 @@ class ScanScreen(Screen):
         self.empresa.text = "Empresa"
         self.precio.text = "Precio"
         self.succes.open()
+    
+    def refresh_data(self,input_text,text):
+        codigo_barras = self.codigo_de_barra.text
+        if store.exists(codigo_barras):
+            self.unidad_por_bulto.text = store.get(codigo_barras)['unidad_bulto']
+            self.codigo.text = store.get(codigo_barras)['codigo']
+            self.descripcion.text = store.get(codigo_barras)['descripcion']
+            self.empresa.text = store.get(codigo_barras)['empresa']
+            self.precio.text = store.get(codigo_barras)['precio']
+
 
 class TableScreen(Screen):
         
