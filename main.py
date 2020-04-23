@@ -49,9 +49,12 @@ class MainScreen(Screen):
         scan_button.bind(on_release = self.changer_scan)
         shopping_button = Button(text = "Carrito de compras")
         shopping_button.bind(on_release = self.changer_shop)
+        db_button = Button(text = "Base de datos")
+        db_button.bind(on_release = self.changer_db)
         main_layout.add_widget(add_button)
         main_layout.add_widget(scan_button)
         main_layout.add_widget(shopping_button)
+        main_layout.add_widget(db_button)
         self.add_widget(main_layout)
 
     def changer_add(self,*args):
@@ -62,6 +65,9 @@ class MainScreen(Screen):
 
     def changer_shop(self,*args):
         self.manager.current = 'table_screen'
+    
+    def changer_db(self,*args):
+        self.manager.current = 'db_screen'
 
     def _request_android_permissions(self):
         if not platform == 'android':
@@ -244,7 +250,7 @@ class TableScreen(Screen):
         self.article_layout = BoxLayout(orientation = "vertical")
         self.quantity_layout = BoxLayout(orientation = "vertical",size_hint = (0.1,1.0))
         self.delete_layout = BoxLayout(orientation = "vertical",size_hint = (0.1,1.0))
-        self.total_layout = BoxLayout(orientation = "horizontal")
+        self.total_layout = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.2))
         self.table_layout.clear_widgets()
         self.labels = TableView(size_hint = (0.9135,1.0)) 
         self.labels.add_column(TableColumn("Codigo",key = "codigo",hint_text='0'))
@@ -380,6 +386,79 @@ class TableScreen(Screen):
         self.export_popup.dismiss()
         self.succes_export_popup.open()
 
+class DbScreen(Screen):
+        
+    def __init__(self,**kwargs):
+        super(DbScreen, self).__init__(**kwargs)
+        self.refresh() 
+
+    def on_pre_enter(self):
+        self.refresh()
+
+    def changer(self,*args):
+        self.manager.current = 'main_screen'
+    
+    def refresh(self,):
+        self.layout = BoxLayout(orientation = "vertical")
+        self.table_layout = BoxLayout(orientation = "horizontal",size_hint = (1.0,1.0))
+        self.article_layout = BoxLayout(orientation = "vertical")
+        self.delete_layout = BoxLayout(orientation = "vertical",size_hint = (0.1,1.0))
+        self.total_layout = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.2))
+        self.table_layout.clear_widgets()
+        self.labels = TableView(size_hint = (0.9135,1.0)) 
+        self.labels.add_column(TableColumn("Codigo",key = "codigo",hint_text='0'))
+        self.labels.add_column(TableColumn("Descripcion",key = "descripcion",hint_text='0'))
+        self.labels.add_column(TableColumn("Empresa",key = "empresa",hint_text='0'))
+        self.labels.add_column(TableColumn("Unidades por bulto",key = "cantidad_bulto",hint_text='0'))
+        self.labels.add_column(TableColumn("Precio",key = "precio" ,hint_text='0'))
+        self.table = TableView(size_hint = (1.0,1.0)) 
+        self.table.add_column(TableColumn("Codigo",key = "codigo",hint_text='0'))
+        self.table.add_column(TableColumn("Descripcion",key = "descripcion",hint_text='0'))
+        self.table.add_column(TableColumn("Empresa",key = "empresa",hint_text='0'))
+        self.table.add_column(TableColumn("Unidades por bulto",key = "cantidad_bulto",hint_text='0'))
+        self.table.add_column(TableColumn("Precio",key = "precio" ,hint_text='0'))
+        row = {"codigo":"Codigo","descripcion":"Descripcion",
+                "empresa":"Empresa","cantidad_bulto":"Unidades por bulto",
+                "precio":"Precio"}
+        self.labels.add_row(row)
+        i = 0
+        for key in store.keys():
+            row = {"codigo":store.get(key)['codigo'],"descripcion":store.get(key)['descripcion'],
+                "empresa":store.get(key)['empresa'],"cantidad_bulto":store.get(key)['unidad_bulto'],
+                "precio":store.get(key)['precio']}
+            self.table.add_row(row)
+            self.delete_layout.add_widget(Button(text = "Eliminar",id = str(i), on_release = self.delete))
+            i = i + 1
+        self.article_layout.add_widget(self.labels)
+        self.table_layout.add_widget(self.table)
+        self.table_layout.add_widget(self.delete_layout)
+        self.article_layout.add_widget(self.table_layout)
+        clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
+        clear_button.bind(on_release = self.clear) 
+        self.content = BoxLayout(orientation = "vertical")
+        previous_button = Button(text = "Volver",size_hint = (1.0,0.1))
+        previous_button.bind(on_release = self.changer)
+        self.discount = TextInput(text = "0.0")
+        self.layout.add_widget(self.article_layout)
+        self.layout.add_widget(clear_button)
+        self.layout.add_widget(previous_button)
+        self.clear_widgets()
+        self.add_widget(self.layout)
+    
+    def delete(self,button):
+        i = 0
+        for key in store.keys():
+            if i == int(button.id):
+                store.delete(key)
+                break
+            i = i+1
+        self.refresh()
+    
+    def clear(self,button):
+        for key in store.keys():
+            store.delete(key)
+        self.refresh()
+
 class ScanApp(App):
     def __init(self,**kwargs):
         super().__init__(**kwargs)
@@ -390,14 +469,16 @@ class ScanApp(App):
         add_screen = AddScreen(name='add_screen')
         scan_screen = ScanScreen(name = 'scan_screen')
         table_screen = TableScreen(name = 'table_screen')
+        db_screen = DbScreen(name = "db_screen")
         manager.add_widget(main_screen)
         manager.add_widget(add_screen)
         manager.add_widget(scan_screen)
         manager.add_widget(table_screen)
+        manager.add_widget(db_screen)
         manager.current = 'main_screen'
         return manager
    
-   def on_pause(self):
+    def on_pause(self):
        return True
 
     
