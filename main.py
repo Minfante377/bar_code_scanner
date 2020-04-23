@@ -279,15 +279,22 @@ class TableScreen(Screen):
         self.table_layout.add_widget(self.delete_layout)
         self.article_layout.add_widget(self.table_layout)
         clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
-        clear_button.bind(on_release = self.clear)
+        clear_button.bind(on_release = self.clear) 
+        self.content = BoxLayout(orientation = "vertical")
+        export = Button(text = "Export", on_release = self.export)
+        self.export_name = TextInput(text = "Nombre del archivo")
+        self.content.add_widget(self.export_name)
+        self.content.add_widget(export)
+        self.export_popup = Popup(title = "Exportar archivo", content = self.content , size_hint = (0.75,0.25))
         export_button = Button(text = "Exportar",size_hint = (1.0,0.1))
-        #export_button.bind(on_release = export)
+        export_button.bind(on_release = self.export_popup.open)
         previous_button = Button(text = "Volver",size_hint = (1.0,0.1))
         previous_button.bind(on_release = self.changer)
         self.discount = TextInput(text = "0.0")
         discount_button = Button(text = "Aplicar descuento")
         discount_button.bind(on_release = self.apply_discount)
         self.discount_warning = Popup(title = "Error!", content = Label(text = "Descuento invalido"), size_hint = (0.75,0.25))
+        self.succes_export_popup = Popup(title = "Exportar Archivo", content = Label(text = "Archivo exportado con exito"), size_hint = (0.75,0.25))
         self.total = Label(text = "Total")
         self.calculate_total(0)
         self.total_layout.add_widget(self.discount) 
@@ -350,6 +357,28 @@ class TableScreen(Screen):
             return
         discount = discount/100
         self.calculate_total(discount)
+    
+    def export(self,button):
+        name = self.export_name.text
+        i = 0
+        f = open("/sdcard/"+name+".csv","w+")
+        f.write("Codigo,Descripcion,Empresa,Unidades por bulto,Precio unitario,Cantidad,Subtotal\n")
+        for key in shopping_car.keys():
+            codigo = shopping_car.get(key)['codigo']
+            descripcion = shopping_car.get(key)['descripcion']
+            empresa = shopping_car.get(key)['empresa']
+            cantidad_bulto = shopping_car.get(key)['unidad_bulto']
+            precio = shopping_car.get(key)['precio']
+            for children in self.quantity_layout.children:
+                if int(children.id) == i:
+                    quantity = int(children.text)
+            subtotal = str(quantity * float(precio))
+            f.write("%s,%s,%s,%s,%s,%s,%s\n" %(codigo,descripcion,empresa,cantidad_bulto,precio,str(quantity),subtotal))
+        f.write(" , , , , ,Descuento,%s\n" % (self.discount.text))
+        f.write(" , , , , ,Total,%s\n" % (self.total.text))
+        f.close()
+        self.export_popup.dismiss()
+        self.succes_export_popup.open()
 
 class ScanApp(App):
     def __init(self,**kwargs):
