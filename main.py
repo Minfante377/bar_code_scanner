@@ -383,7 +383,7 @@ class TableScreen(Screen):
                     quantity = int(children.text)
             total = total + quantity * price
         total = (1 - discount) * total
-        self.total.text = str(total)
+        self.total.text = "%.2f" % total
     
     def apply_discount(self,button):
         try:
