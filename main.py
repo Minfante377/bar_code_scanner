@@ -293,13 +293,20 @@ class TableScreen(Screen):
                 "precio":"Precio"}
         self.labels.add_row(row)
         i = 0
+        self.content = BoxLayout(orientation = 'vertical')
+        delete = Button(text = "Eliminar", on_release = self.delete)
+        delete.bind(on_release = self.delete)
+        self.delete_label = Label(text = "Esta a punto de eliminar un elemento")
+        self.content.add_widget(self.delete_label)
+        self.content.add_widget(delete)
+        self.delete_popup = Popup(title = "Eliminar", content = self.content , size_hint = (0.75,0.25))
         for key in shopping_car.keys():
             row = {"codigo":shopping_car.get(key)['codigo'],"descripcion":shopping_car.get(key)['descripcion'],
                 "empresa":shopping_car.get(key)['empresa'],"cantidad_bulto":shopping_car.get(key)['unidad_bulto'],
                 "precio":shopping_car.get(key)['precio']}
             self.table.add_row(row)
             self.quantity_layout.add_widget(TextInput(text = "1",id = str(i)))
-            self.delete_layout.add_widget(Button(text = "Eliminar",id = str(i), on_release = self.delete))
+            self.delete_layout.add_widget(Button(text = "Eliminar",id = str(i), on_release = self.call_delete_popup))
             i = i + 1
         for children in self.quantity_layout.children:
             children.bind(text = self.refresh_total)
@@ -308,8 +315,15 @@ class TableScreen(Screen):
         self.table_layout.add_widget(self.quantity_layout)
         self.table_layout.add_widget(self.delete_layout)
         self.article_layout.add_widget(self.table_layout)
-        clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
-        clear_button.bind(on_release = self.clear) 
+        self.clear_content = BoxLayout(orientation = 'vertical')
+        clear_button = Button(text = "Eliminar")
+        clear_button.bind(on_release = self.clear)
+        self.clear_label = Label(text = "Esta a punto de eliminar todos los elementos")
+        self.clear_content.add_widget(self.clear_label)
+        self.clear_content.add_widget(clear_button)
+        self.clear_popup = Popup(title = "Eliminar", content = self.clear_content , size_hint = (0.75,0.25))
+        self.clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
+        self.clear_button.bind(on_release = self.clear_popup.open) 
         self.content = BoxLayout(orientation = "vertical")
         export = Button(text = "Export", on_release = self.export)
         self.export_name = TextInput(text = "Nombre del archivo")
@@ -333,23 +347,30 @@ class TableScreen(Screen):
         self.layout.add_widget(self.article_layout)
         self.layout.add_widget(self.total_layout)
         self.layout.add_widget(export_button)
-        self.layout.add_widget(clear_button)
+        self.layout.add_widget(self.clear_button)
         self.layout.add_widget(previous_button)
         self.clear_widgets()
         self.add_widget(self.layout)
-    
-    def delete(self,button):
+   
+    def call_delete_popup(self,button):
         i = 0
         for key in shopping_car.keys():
             if i == int(button.id):
-                shopping_car.delete(key)
                 break
             i = i+1
+        self.delete_index = i
+        self.delete_popup.open()
+
+    def delete(self,button):
+        key = shopping_car.keys()[self.delete_index]
+        shopping_car.delete(key)
+        self.delete_popup.dismiss()
         self.refresh()
     
     def clear(self,button):
         for key in shopping_car.keys():
             shopping_car.delete(key)
+        self.clear_popup.dismiss()
         self.refresh()
     
     def calculate_total(self,discount):
@@ -446,41 +467,62 @@ class DbScreen(Screen):
                 "precio":"Precio"}
         self.labels.add_row(row)
         i = 0
+        self.content = BoxLayout(orientation = 'vertical')
+        delete = Button(text = "Eliminar", on_release = self.delete)
+        delete.bind(on_release = self.delete)
+        self.delete_label = Label(text = "Esta a punto de eliminar un elemento")
+        self.content.add_widget(self.delete_label)
+        self.content.add_widget(delete)
+        self.delete_popup = Popup(title = "Eliminar", content = self.content , size_hint = (0.75,0.25))
         for key in store.keys():
             row = {"codigo":store.get(key)['codigo'],"descripcion":store.get(key)['descripcion'],
                 "empresa":store.get(key)['empresa'],"cantidad_bulto":store.get(key)['unidad_bulto'],
                 "precio":store.get(key)['precio']}
             self.table.add_row(row)
-            self.delete_layout.add_widget(Button(text = "Eliminar",id = str(i), on_release = self.delete))
+            self.delete_layout.add_widget(Button(text = "Eliminar",id = str(i), on_release = self.call_delete_popup))
             i = i + 1
         self.article_layout.add_widget(self.labels)
         self.table_layout.add_widget(self.table)
         self.table_layout.add_widget(self.delete_layout)
-        self.article_layout.add_widget(self.table_layout)
-        clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
-        clear_button.bind(on_release = self.clear) 
+        self.article_layout.add_widget(self.table_layout) 
+        self.clear_content = BoxLayout(orientation = 'vertical')
+        clear_button = Button(text = "Eliminar")
+        clear_button.bind(on_release = self.clear)
+        self.clear_label = Label(text = "Esta a punto de eliminar todos los elementos")
+        self.clear_content.add_widget(self.clear_label)
+        self.clear_content.add_widget(clear_button)
+        self.clear_popup = Popup(title = "Eliminar", content = self.clear_content , size_hint = (0.75,0.25))
+        self.clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
+        self.clear_button.bind(on_release = self.clear_popup.open) 
         self.content = BoxLayout(orientation = "vertical")
         previous_button = Button(text = "Volver",size_hint = (1.0,0.1))
         previous_button.bind(on_release = self.changer)
         self.discount = TextInput(text = "0.0")
         self.layout.add_widget(self.article_layout)
-        self.layout.add_widget(clear_button)
+        self.layout.add_widget(self.clear_button)
         self.layout.add_widget(previous_button)
         self.clear_widgets()
         self.add_widget(self.layout)
     
-    def delete(self,button):
+    def call_delete_popup(self,button):
         i = 0
         for key in store.keys():
             if i == int(button.id):
-                store.delete(key)
                 break
             i = i+1
+        self.delete_index = i
+        self.delete_popup.open()
+
+    def delete(self,button):
+        key = store.keys()[self.delete_index]
+        store.delete(key)
+        self.delete_popup.dismiss()
         self.refresh()
     
     def clear(self,button):
         for key in store.keys():
             store.delete(key)
+        self.clear_popup.dismiss()
         self.refresh()
 
 class ScanApp(App):
