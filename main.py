@@ -13,6 +13,7 @@ from kivy.uix.camera import Camera
 from kivy.uix.popup import Popup
 from kivy.utils import platform
 from kivy.lang import Builder
+from kivy.uix.filechooser import FileChooserListView
 from functools import partial
 from datetime import datetime
 from pyzbar import pyzbar
@@ -38,6 +39,14 @@ Builder.load_string('''
                 canvas.after:
                         PopMatrix
                 ''')
+Builder.load_string('''
+<FileBrowser>
+    file_chooser: file_chooser
+    FileChooserListView:
+        id:file_chooser
+        on_selection:
+            root.selected_file(*args)
+        ''')
 
 class MainScreen(Screen):
     
@@ -78,6 +87,18 @@ class MainScreen(Screen):
         from android.permissions import request_permissions, Permission
         request_permissions([Permission.CAMERA, Permission.WRITE_EXTERNAL_STORAGE])
 
+class FileBrowser(BoxLayout):
+    
+    def __init__(self,**kwargs):
+        super(FileBrowser,self).__init__(**kwargs)
+        self.file_chooser.path = "./"
+    
+    def selected_file(self,*args):
+        try:
+            self.file_chooser.path = args[1][0]
+        except:
+            pass
+
 class AddScreen(Screen):
 
     def __init__(self,**kwargs):
@@ -104,6 +125,15 @@ class AddScreen(Screen):
         generar_button.bind(on_release = self.create)
         add_layout.add_widget(inputs_box)
         add_layout.add_widget(generar_button)
+        self.file_chooser = FileBrowser()
+        self.browse_content = BoxLayout(orientation = 'vertical')
+        self.browse_content.add_widget(self.file_chooser)
+        self.import_button = Button(text = "Importar archivo", on_release = self.import_csv,size_hint = (1.0,0.2))
+        self.browse_content.add_widget(self.import_button)
+        self.browse_popup = Popup(title = "Importar archivo",content = self.browse_content,size_hint = (0.75,0.75))
+        import_button = Button(text = "Importar")
+        import_button.bind(on_release = self.browse_popup.open)
+        add_layout.add_widget(import_button)
         previous_button = Button(text = "Volver")
         previous_button.bind(on_release = self.changer)
         add_layout.add_widget(previous_button)
@@ -136,6 +166,21 @@ class AddScreen(Screen):
         self.codigo_de_barra.text = ""
         self.empresa.text = ""
         self.precio.text = ""
+        self.succes.open()
+    
+    def import_csv(self,button):
+        path = self.file_chooser.file_chooser.path
+        try:
+            f = open(path,'r')
+        except:
+            return
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip("\n")
+            line = line.split(",")
+            store.put(line[0],descripcion = line[2],unidad_bulto = line[4],
+                codigo = line[1], empresa = line[3], precio = line[5])
+        self.browse_popup.dismiss()
         self.succes.open()
 
 class RotatedCamera(BoxLayout):
