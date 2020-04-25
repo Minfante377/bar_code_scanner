@@ -159,6 +159,7 @@ class ScanScreen(Screen):
         self.codigo_de_barra.bind(text = self.refresh_data)
         self.empresa = TextInput(hint_text = "Empresa")
         self.precio = TextInput(hint_text = "Precio")
+        self.quantity = TextInput(hint_text = "Cantidad",size_hint = (1.0,0.1))
         input_left_box.add_widget(self.codigo)
         input_left_box.add_widget(self.descripcion)
         input_left_box.add_widget(self.empresa)
@@ -174,6 +175,7 @@ class ScanScreen(Screen):
         previous_button = Button(text = "Volver",size_hint = (1.0,0.1))
         previous_button.bind(on_release = self.changer)
         scan_layout.add_widget(inputs_box)
+        scan_layout.add_widget(self.quantity)
         scan_layout.add_widget(scan_button)
         scan_layout.add_widget(add_button)
         scan_layout.add_widget(previous_button)
@@ -222,6 +224,7 @@ class ScanScreen(Screen):
             self.codigo_de_barra.text = ""
             self.empresa.text = ""
             self.precio.text = ""
+            self.quantity.text = ""
             self.warning.open()
             return
         
@@ -234,16 +237,18 @@ class ScanScreen(Screen):
             self.codigo_de_barra.text = ""
             self.empresa.text = ""
             self.precio.text = ""
+            self.quantity.text = ""
             return
 
         shopping_car.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
-                codigo = self.codigo.text, empresa = self.empresa.text, precio = self.precio.text)
+                codigo = self.codigo.text, empresa = self.empresa.text, precio = self.precio.text, cantidad = self.quantity.text)
         self.codigo.text= ""
         self.descripcion.text = ""
         self.unidad_por_bulto.text = ""
         self.codigo_de_barra.text = ""
         self.empresa.text = ""
         self.precio.text = ""
+        self.quantity.text = ""
         self.succes.open()
     
     def refresh_data(self,input_text,text):
@@ -305,7 +310,7 @@ class TableScreen(Screen):
                 "empresa":shopping_car.get(key)['empresa'],"cantidad_bulto":shopping_car.get(key)['unidad_bulto'],
                 "precio":shopping_car.get(key)['precio']}
             self.table.add_row(row)
-            self.quantity_layout.add_widget(TextInput(text = "1",id = str(i)))
+            self.quantity_layout.add_widget(TextInput(text = shopping_car.get(key)['cantidad'],id = str(i)))
             self.delete_layout.add_widget(Button(text = "Eliminar",id = str(i), on_release = self.call_delete_popup))
             i = i + 1
         for children in self.quantity_layout.children:
