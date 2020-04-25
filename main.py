@@ -18,6 +18,9 @@ from datetime import datetime
 from pyzbar import pyzbar
 from table import TableView, TableColumn
 import sys
+from kivy.config import Config
+
+Config.set('kivy','exit_on_escape','0')
 
 store = JsonStore('articles.json')
 shopping_car = JsonStore('shopping_car.json')
