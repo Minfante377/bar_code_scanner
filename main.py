@@ -137,8 +137,8 @@ class AddScreen(Screen):
         previous_button = Button(text = "Volver")
         previous_button.bind(on_release = self.changer)
         add_layout.add_widget(previous_button)
-        self.succes = Popup(title = "Aviso de articulo", content = Label(text = "Articulo creado con exito"), size_hint = (0.75,0.25))
-        self.warning = Popup(title = "Aviso de articulo", content = Label(text = "Datos invalidos"), size_hint = (0.75,0.25))
+        self.succes = Popup(title = "Aviso de articulo", content = Label(text = "Articulo creado con exito"), size_hint = (0.9,0.25))
+        self.warning = Popup(title = "Aviso de articulo", content = Label(text = "Datos invalidos"), size_hint = (0.9,0.25))
         self.add_widget(add_layout)
     
     def changer(self,*args):
@@ -194,7 +194,7 @@ class ScanScreen(Screen):
     def __init__(self,**kwargs):
         super(ScanScreen, self).__init__(**kwargs)
         scan_layout = BoxLayout(orientation = "vertical")
-        inputs_box = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.3))
+        inputs_box = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.2))
         input_left_box = BoxLayout(orientation = "vertical")
         input_right_box = BoxLayout(orientation = "vertical")
         self.codigo = TextInput(hint_text="Codigo")
@@ -204,7 +204,7 @@ class ScanScreen(Screen):
         self.codigo_de_barra.bind(text = self.refresh_data)
         self.empresa = TextInput(hint_text = "Empresa")
         self.precio = TextInput(hint_text = "Precio")
-        self.quantity = TextInput(hint_text = "Cantidad",size_hint = (1.0,0.1))
+        self.quantity = TextInput(hint_text = "Cantidad",size_hint = (1.0,0.05))
         input_left_box.add_widget(self.codigo)
         input_left_box.add_widget(self.descripcion)
         input_left_box.add_widget(self.empresa)
@@ -213,24 +213,25 @@ class ScanScreen(Screen):
         input_right_box.add_widget(self.precio)
         inputs_box.add_widget(input_left_box)
         inputs_box.add_widget(input_right_box)
-        scan_button = Button(text = "Escanear codigo de barras",size_hint = (1.0,0.1))
+        scan_button = Button(text = "Escanear codigo de barras",size_hint = (1.0,0.05))
         scan_button.bind(on_release = self.read_bar_code)
-        add_button = Button(text = "Agregar articulo",size_hint = (1.0,0.1))
+        add_button = Button(text = "Agregar articulo",size_hint = (1.0,0.05))
         add_button.bind(on_release = self.add_item)
-        previous_button = Button(text = "Volver",size_hint = (1.0,0.1))
+        previous_button = Button(text = "Volver",size_hint = (1.0,0.05))
         previous_button.bind(on_release = self.changer)
         scan_layout.add_widget(inputs_box)
         scan_layout.add_widget(self.quantity)
         scan_layout.add_widget(scan_button)
         scan_layout.add_widget(add_button)
         scan_layout.add_widget(previous_button)
-        self.cameraObject = RotatedCamera()
-        self.cameraObject.ids['camera'].resolution = (1920, 1080) 
+        self.cameraObject = RotatedCamera(size_hint = (1.0,0.5))
+        self.cameraObject.ids['camera'].resolution = (640, 480) 
         self.cameraObject.ids['camera'].allow_strech = True
+        self.cameraObject.ids['camera'].keep_ratio = False
         self.cameraObject.ids['camera'].play = True
         scan_layout.add_widget(self.cameraObject)
-        self.succes = Popup(title = "Aviso de articulo", content = Label(text = "Articulo agregado con exito"), size_hint = (0.75,0.25))
-        self.warning = Popup(title = "Aviso de articulo", content = Label(text = "Datos invalidos"), size_hint = (0.75,0.25))
+        self.succes = Popup(title = "Aviso de articulo", content = Label(text = "Articulo agregado con exito"), size_hint = (0.9,0.25))
+        self.warning = Popup(title = "Aviso de articulo", content = Label(text = "Datos invalidos"), size_hint = (0.9,0.25))
         self.add_widget(scan_layout)
     
     def changer(self,*args):
@@ -274,7 +275,7 @@ class ScanScreen(Screen):
             return
         
         if not store.exists(self.codigo_de_barra.text):
-            warning = Popup(title = "Error", content = Label(text = "El codigo de barras no existe en su base de datos"), size_hint = (0.75,0.25))
+            warning = Popup(title = "Error", content = Label(text = "El codigo de barras no existe en su base de datos"), size_hint = (0.9,0.25))
             warning.open()
             self.codigo.text= ""
             self.descripcion.text = ""
@@ -349,7 +350,7 @@ class TableScreen(Screen):
         self.delete_label = Label(text = "Esta a punto de eliminar un elemento")
         self.content.add_widget(self.delete_label)
         self.content.add_widget(delete)
-        self.delete_popup = Popup(title = "Eliminar", content = self.content , size_hint = (0.75,0.25))
+        self.delete_popup = Popup(title = "Eliminar", content = self.content , size_hint = (0.9,0.25))
         for key in shopping_car.keys():
             row = {"codigo":shopping_car.get(key)['codigo'],"descripcion":shopping_car.get(key)['descripcion'],
                 "empresa":shopping_car.get(key)['empresa'],"cantidad_bulto":shopping_car.get(key)['unidad_bulto'],
@@ -371,7 +372,7 @@ class TableScreen(Screen):
         self.clear_label = Label(text = "Esta a punto de eliminar todos los elementos")
         self.clear_content.add_widget(self.clear_label)
         self.clear_content.add_widget(clear_button)
-        self.clear_popup = Popup(title = "Eliminar", content = self.clear_content , size_hint = (0.75,0.25))
+        self.clear_popup = Popup(title = "Eliminar", content = self.clear_content , size_hint = (0.9,0.25))
         self.clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
         self.clear_button.bind(on_release = self.clear_popup.open) 
         self.content = BoxLayout(orientation = "vertical")
@@ -379,7 +380,7 @@ class TableScreen(Screen):
         self.export_name = TextInput(hint_text = "Nombre del archivo")
         self.content.add_widget(self.export_name)
         self.content.add_widget(export)
-        self.export_popup = Popup(title = "Exportar archivo", content = self.content , size_hint = (0.75,0.25))
+        self.export_popup = Popup(title = "Exportar archivo", content = self.content , size_hint = (0.9,0.25))
         export_button = Button(text = "Exportar",size_hint = (1.0,0.1))
         export_button.bind(on_release = self.export_popup.open)
         previous_button = Button(text = "Volver",size_hint = (1.0,0.1))
@@ -387,8 +388,8 @@ class TableScreen(Screen):
         self.discount = TextInput(text = "0.0")
         discount_button = Button(text = "Aplicar descuento")
         discount_button.bind(on_release = self.apply_discount)
-        self.discount_warning = Popup(title = "Error!", content = Label(text = "Descuento invalido"), size_hint = (0.75,0.25))
-        self.succes_export_popup = Popup(title = "Exportar Archivo", content = Label(text = "Archivo exportado con exito"), size_hint = (0.75,0.25))
+        self.discount_warning = Popup(title = "Error!", content = Label(text = "Descuento invalido"), size_hint = (0.9,0.25))
+        self.succes_export_popup = Popup(title = "Exportar Archivo", content = Label(text = "Archivo exportado con exito"), size_hint = (0.9,0.25))
         self.total = Label(text = "Total")
         self.calculate_total(0)
         self.total_layout.add_widget(self.discount) 
@@ -523,7 +524,7 @@ class DbScreen(Screen):
         self.delete_label = Label(text = "Esta a punto de eliminar un elemento")
         self.content.add_widget(self.delete_label)
         self.content.add_widget(delete)
-        self.delete_popup = Popup(title = "Eliminar", content = self.content , size_hint = (0.75,0.25))
+        self.delete_popup = Popup(title = "Eliminar", content = self.content , size_hint = (0.9,0.25))
         for key in store.keys():
             row = {"codigo":store.get(key)['codigo'],"descripcion":store.get(key)['descripcion'],
                 "empresa":store.get(key)['empresa'],"cantidad_bulto":store.get(key)['unidad_bulto'],
@@ -541,7 +542,7 @@ class DbScreen(Screen):
         self.clear_label = Label(text = "Esta a punto de eliminar todos los elementos")
         self.clear_content.add_widget(self.clear_label)
         self.clear_content.add_widget(clear_button)
-        self.clear_popup = Popup(title = "Eliminar", content = self.clear_content , size_hint = (0.75,0.25))
+        self.clear_popup = Popup(title = "Eliminar", content = self.clear_content , size_hint = (0.9,0.25))
         self.clear_button = Button(text = "Borrar todo",size_hint = (1.0,0.1))
         self.clear_button.bind(on_release = self.clear_popup.open) 
         self.content = BoxLayout(orientation = "vertical")
