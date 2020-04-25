@@ -86,12 +86,12 @@ class AddScreen(Screen):
         inputs_box = BoxLayout(orientation = "horizontal")
         input_left_box = BoxLayout(orientation = "vertical")
         input_right_box = BoxLayout(orientation = "vertical")
-        self.codigo = TextInput(text="Codigo")
-        self.descripcion = TextInput(text="Descripcion")
-        self.unidad_por_bulto = TextInput(text="Unidades por bulto")
-        self.codigo_de_barra = TextInput(text="Codigo de barra")
-        self.empresa = TextInput(text = "Empresa")
-        self.precio = TextInput(text = "Precio")
+        self.codigo = TextInput(hint_text = "Codigo")
+        self.descripcion = TextInput(hint_text="Descripcion")
+        self.unidad_por_bulto = TextInput(hint_text="Unidades por bulto")
+        self.codigo_de_barra = TextInput(hint_text="Codigo de barra")
+        self.empresa = TextInput(hint_text = "Empresa")
+        self.precio = TextInput(hint_text = "Precio")
         input_left_box.add_widget(self.codigo)
         input_left_box.add_widget(self.descripcion)
         input_left_box.add_widget(self.empresa)
@@ -120,22 +120,22 @@ class AddScreen(Screen):
             int(self.codigo_de_barra.text)
             float(self.precio.text)
         except:
-            self.codigo.text= "Codigo"
-            self.descripcion.text = "Descripcion"
-            self.unidad_por_bulto.text = "Unidades por bulto"
-            self.codigo_de_barra.text = "Codigo de barra"
-            self.empresa.text = "Empresa"
-            self.precio.text = "Precio"
+            self.codigo.text= ""
+            self.descripcion.text = ""
+            self.unidad_por_bulto.text = ""
+            self.codigo_de_barra.text = ""
+            self.empresa.text = ""
+            self.precio.text = ""
             self.warning.open()
             return
         store.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
                 codigo = self.codigo.text, empresa = self.empresa.text, precio = self.precio.text)
-        self.codigo.text= "Codigo"
-        self.descripcion.text = "Descripcion"
-        self.unidad_por_bulto.text = "Unidades por bulto"
-        self.codigo_de_barra.text = "Codigo de barra"
-        self.empresa.text = "Empresa"
-        self.precio.text = "Precio"
+        self.codigo.text= ""
+        self.descripcion.text = ""
+        self.unidad_por_bulto.text = ""
+        self.codigo_de_barra.text = ""
+        self.empresa.text = ""
+        self.precio.text = ""
         self.succes.open()
 
 class RotatedCamera(BoxLayout):
@@ -152,13 +152,13 @@ class ScanScreen(Screen):
         inputs_box = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.3))
         input_left_box = BoxLayout(orientation = "vertical")
         input_right_box = BoxLayout(orientation = "vertical")
-        self.codigo = TextInput(text="Codigo")
-        self.descripcion = TextInput(text="Descripcion")
-        self.unidad_por_bulto = TextInput(text="Unidades por bulto")
-        self.codigo_de_barra = TextInput(text="Codigo de barra")
+        self.codigo = TextInput(hint_text="Codigo")
+        self.descripcion = TextInput(hint_text="Descripcion")
+        self.unidad_por_bulto = TextInput(hint_text="Unidades por bulto")
+        self.codigo_de_barra = TextInput(hint_text="Codigo de barra")
         self.codigo_de_barra.bind(text = self.refresh_data)
-        self.empresa = TextInput(text = "Empresa")
-        self.precio = TextInput(text = "Precio")
+        self.empresa = TextInput(hint_text = "Empresa")
+        self.precio = TextInput(hint_text = "Precio")
         input_left_box.add_widget(self.codigo)
         input_left_box.add_widget(self.descripcion)
         input_left_box.add_widget(self.empresa)
@@ -216,34 +216,34 @@ class ScanScreen(Screen):
             int(self.codigo_de_barra.text)
             float(self.precio.text)
         except:
-            self.codigo.text= "Codigo"
-            self.descripcion.text = "Descripcion"
-            self.unidad_por_bulto.text = "Unidades por bulto"
-            self.codigo_de_barra.text = "Codigo de barra"
-            self.empresa.text = "Empresa"
-            self.precio.text = "Precio"
+            self.codigo.text= ""
+            self.descripcion.text = ""
+            self.unidad_por_bulto.text = ""
+            self.codigo_de_barra.text = ""
+            self.empresa.text = ""
+            self.precio.text = ""
             self.warning.open()
             return
         
         if not store.exists(self.codigo_de_barra.text):
             warning = Popup(title = "Error", content = Label(text = "El codigo de barras no existe en su base de datos"), size_hint = (0.75,0.25))
             warning.open()
-            self.codigo.text= "Codigo"
-            self.descripcion.text = "Descripcion"
-            self.unidad_por_bulto.text = "Unidades por bulto"
-            self.codigo_de_barra.text = "Codigo de barra"
-            self.empresa.text = "Empresa"
-            self.precio.text = "Precio"
+            self.codigo.text= ""
+            self.descripcion.text = ""
+            self.unidad_por_bulto.text = ""
+            self.codigo_de_barra.text = ""
+            self.empresa.text = ""
+            self.precio.text = ""
             return
 
         shopping_car.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
                 codigo = self.codigo.text, empresa = self.empresa.text, precio = self.precio.text)
-        self.codigo.text= "Codigo"
-        self.descripcion.text = "Descripcion"
-        self.unidad_por_bulto.text = "Unidades por bulto"
-        self.codigo_de_barra.text = "Codigo de barra"
-        self.empresa.text = "Empresa"
-        self.precio.text = "Precio"
+        self.codigo.text= ""
+        self.descripcion.text = ""
+        self.unidad_por_bulto.text = ""
+        self.codigo_de_barra.text = ""
+        self.empresa.text = ""
+        self.precio.text = ""
         self.succes.open()
     
     def refresh_data(self,input_text,text):
@@ -326,7 +326,7 @@ class TableScreen(Screen):
         self.clear_button.bind(on_release = self.clear_popup.open) 
         self.content = BoxLayout(orientation = "vertical")
         export = Button(text = "Export", on_release = self.export)
-        self.export_name = TextInput(text = "Nombre del archivo")
+        self.export_name = TextInput(hint_text = "Nombre del archivo")
         self.content.add_widget(self.export_name)
         self.content.add_widget(export)
         self.export_popup = Popup(title = "Exportar archivo", content = self.content , size_hint = (0.75,0.25))
