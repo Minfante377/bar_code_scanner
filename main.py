@@ -31,6 +31,7 @@ Builder.load_string('''
         orientation: 'vertical'
         Camera:
                 id:camera
+                resolution: (1600,1200)
                 canvas.before:
                         PushMatrix
                         Rotate:
@@ -91,7 +92,7 @@ class FileBrowser(BoxLayout):
     
     def __init__(self,**kwargs):
         super(FileBrowser,self).__init__(**kwargs)
-        self.file_chooser.path = "./"
+        self.file_chooser.path = "/sdcard/"
     
     def selected_file(self,*args):
         try:
@@ -194,7 +195,7 @@ class ScanScreen(Screen):
     def __init__(self,**kwargs):
         super(ScanScreen, self).__init__(**kwargs)
         scan_layout = BoxLayout(orientation = "vertical")
-        inputs_box = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.2))
+        inputs_box = BoxLayout(orientation = "horizontal",size_hint = (1.0,0.1))
         input_left_box = BoxLayout(orientation = "vertical")
         input_right_box = BoxLayout(orientation = "vertical")
         self.codigo = TextInput(hint_text="Codigo")
@@ -204,7 +205,7 @@ class ScanScreen(Screen):
         self.codigo_de_barra.bind(text = self.refresh_data)
         self.empresa = TextInput(hint_text = "Empresa")
         self.precio = TextInput(hint_text = "Precio")
-        self.quantity = TextInput(hint_text = "Cantidad",size_hint = (1.0,0.05))
+        self.quantity = TextInput(hint_text = "Cantidad",size_hint = (1.0,0.03))
         input_left_box.add_widget(self.codigo)
         input_left_box.add_widget(self.descripcion)
         input_left_box.add_widget(self.empresa)
