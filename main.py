@@ -159,6 +159,9 @@ class AddScreen(Screen):
             self.precio.text = ""
             self.warning.open()
             return
+        if self.codigo.text == '' or self.descripcion.text == '' or self.unidad_por_bulto.text == '' or self.empresa == '':
+            self.warning.open()
+            return
         store.put(self.codigo_de_barra.text,descripcion = self.descripcion.text,unidad_bulto = self.unidad_por_bulto.text,
                 codigo = self.codigo.text, empresa = self.empresa.text, precio = self.precio.text)
         self.codigo.text= ""
@@ -226,7 +229,6 @@ class ScanScreen(Screen):
         scan_layout.add_widget(add_button)
         scan_layout.add_widget(previous_button)
         self.cameraObject = RotatedCamera(size_hint = (1.0,0.5))
-        self.cameraObject.ids['camera'].resolution = (640, 480) 
         self.cameraObject.ids['camera'].allow_strech = True
         self.cameraObject.ids['camera'].keep_ratio = False
         self.cameraObject.ids['camera'].play = True
@@ -264,6 +266,7 @@ class ScanScreen(Screen):
         try:
             int(self.codigo_de_barra.text)
             float(self.precio.text)
+            int(self.quantity.text)
         except:
             self.codigo.text= ""
             self.descripcion.text = ""
